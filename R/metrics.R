@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
-
+library(dplyr)
 
 cgmmetrics <- function(inputdir, outputdir, magesd = 1, useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10){
   fileNames = list.files(inputdir)
