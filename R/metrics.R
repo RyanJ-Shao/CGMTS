@@ -23,9 +23,9 @@ cgmmetrics <- function(inputdir, outputdir, magesd = 1, useig = FALSE, threshold
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
     cgmtsall <- cgmtsall %>% mutate(timedate = maxtimestamp)
-    
+
     #cgmtsall <- cgmtsall %>% mutate(imglucose = imglucose/18)
-    
+
     sd <- sdall(cgmtsall = cgmtsall, useig = useig)
     sdvec <- append(sdvec, sd)
     mean <- meanall(cgmtsall = cgmtsall,useig = useig)
@@ -45,20 +45,23 @@ cgmmetrics <- function(inputdir, outputdir, magesd = 1, useig = FALSE, threshold
     tirvec <- append(tirvec, tir)
     modd <- round(mean(modd(cgmtsall = cgmtsall, useig = useig)),2)
     moddvec <- append(moddvec, modd)
-    
+
     mtcdf <- mtcgrpday(cgmtsall,useig = useig, threshold = threshold,  bthreshold = bthreshold, athreshold = athreshold)
-    write.csv(mtcdf, paste(outputdir,fname, "_" , "metricsByDay.csv",sep = ""),row.names = FALSE)
-  }
-  summetrics <- data.frame(ID = fnamevec, SD = sdvec, Mean = meanvec, CV = cvvec, GMI = gmisvec, 
-                           LBGI = lbgivec, HBGI = hbgivec, MAGE = magevec, TIR = tirvec,
-                           MODD = moddvec)
-  write.csv(summetrics, paste(outputdir,"metricsSummary.csv",sep = ""),row.names = FALSE)
-  
+    write.csv(mtcdf, paste(outputdir,fname, "_metricsByDay.csv",sep = ""),row.names = FALSE)
+
+    summetrics <- data.frame(ID = fnamevec, SD = sdvec, Mean = meanvec, CV = cvvec, GMI = gmisvec,
+                             LBGI = lbgivec, HBGI = hbgivec, MAGE = magevec, TIR = tirvec,
+                             MODD = moddvec)
+    write.csv(summetrics, paste(outputdir,fname,"_metricsSummary.csv",sep = ""),row.names = FALSE)
+
+
+    }
+
 }
 
 
 mtcgrpday <- function(cgmtsall,useig = FALSE, threshold = 1,  bthreshold = 3.9, athreshold = 10){
-  
+
   sdcol <- sdgrpbyday(cgmtsall = cgmtsall, useig = useig)
   meancol <- meangrpbyday(cgmtsall = cgmtsall, useig = useig)
   cvcol <- cvgrpbyday(cgmtsall = cgmtsall, useig = useig)
@@ -69,8 +72,8 @@ mtcgrpday <- function(cgmtsall,useig = FALSE, threshold = 1,  bthreshold = 3.9, 
   tircol <- tir(cgmtsall = cgmtsall, useig = useig,  bthreshold = bthreshold, athreshold = athreshold)
   moddcol <- c(NA)
   moddcol <- append(moddcol, modd(cgmtsall = cgmtsall, useig = useig))
-  
-  metricsdf <- data.frame(Day = c(1:length(sdcol)), SD = sdcol, Mean = meancol, CV = cvcol, 
+
+  metricsdf <- data.frame(Day = c(1:length(sdcol)), SD = sdcol, Mean = meancol, CV = cvcol,
                            LBGI = lbgicol, HBGI = hbgicol, MAGE = magecol, TIR = tircol,
                            MODD = moddcol)
   return(metricsdf)
@@ -215,7 +218,7 @@ mage <- function(cgmtsall, useig = FALSE, threshold = 1){
     }
     daysd <- threshold * daysd
     diffglucose <- diff(dayglucose)
-    
+
     inorder <- TRUE
     sflag <- TRUE
     turnpoints <- c()
@@ -239,7 +242,7 @@ mage <- function(cgmtsall, useig = FALSE, threshold = 1){
           turnpoints <- append(turnpoints, dayglucose[i])
           inorder <- FALSE
         }
-        
+
       }else{
         if(diffglucose[i] < 0){
           turnpoints <- append(turnpoints, dayglucose[i])
@@ -258,9 +261,9 @@ mage <- function(cgmtsall, useig = FALSE, threshold = 1){
     }
     magevec <- append(magevec, abs(round(mean(tpdiff),2)))
   }
-  
+
   return(magevec)
-  
+
 }
 mageall <- function(cgmtsall, useig = FALSE, threshold = 1){
   mage <- 0
