@@ -279,9 +279,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
         )
         )
     if(html){
-      print(html)
       htmlwidgets::saveWidget(fig, paste(outputdir, fname,"_", d , ".html",sep = ""))
-      print(html)
     }else{
       oldworkdir = getwd()
       setwd(outputdir)
