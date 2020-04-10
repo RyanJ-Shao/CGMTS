@@ -4,13 +4,14 @@ library(dplyr)
 library(imputeTS)
 library(forecast)
 library(TSA)
-qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear", 
-                 maxgap = 60, compeleteday = TRUE, removeday = FALSE, units = 'mmol/L'){
+qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear",
+                 maxgap = 60, compeleteday = TRUE, removeday = FALSE, transunits = FALSE){
   vectimestamp <- as.vector(cgmts$timestamp)
   vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
   maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
   cgmts <- cgmts %>% mutate(timedate = maxtimestamp)
   coldate <- unique(cgmts$timedate)
+  freq = 1440/interval
   #remove first day and last day
   fday <- coldate[1]
   lday <- coldate[-1]
@@ -22,10 +23,10 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
     cgmts[cgmts$timedate ==lday,]$timedate <- NA
   }
   cgmts <- cgmts[!is.na(cgmts$timedate),]
-  if(units != "mmol/L"){
+  if(transunits){
     cgmts <- mutate(cgmts, sglucose = round(sglucose/18,2))
   }
-  freq = 1440/interval
+
   if(compeleteday){
     for (d in coldate){
       if (length(cgmts[cgmts$timedate == d,]$timedate) < freq){
@@ -45,7 +46,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
     }else if(immethod == "arima"){
       print("ARIMA imputation")
       cgmts <- cgmts %>% mutate(imglucose = na.kalman(cgmts$sglucose,model = "auto.arima",maxgap = as.integer(maxgap/interval)))
-      
+
     }
     if(removeday == TRUE){
       is.na.rle <- rle(is.na(cgmts$sglucose))
@@ -68,9 +69,10 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
       }
       cgmts <- cgmts[!is.na(cgmts$timedate),]
   }
-  
+
   }
   if(outlierdet == TRUE){
+    cgmts <- mutate(cgmts, outliers = NA)
     unidate = unique(cgmts$timedate)
     for (d in unidate){
       udcgm <- cgmts[cgmts$timedate ==d,]
@@ -82,7 +84,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
         io <- detectIO(tsmodel)
         aodict <- c(ao$lambda2)
         names(aodict) <- ao$ind
-        
+
         iodict <- c(io$lambda1)
         names(iodict) <- io$ind
         indinc <- intersect(ao$ind, io$ind)
@@ -96,7 +98,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
             iodict <- iodict[-removeind]
           }
         }
-        
+
         for(i in seq_along(aodict)){
           ind <- as.numeric(names(aodict)[i])
           udcgm[c(ind),]$outliers <- "AO"
@@ -108,7 +110,6 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
         cgmts[cgmts$timedate ==d,]$outliers <- udcgm$outliers
       }
     }
-    
     return(cgmts)
   }
 }
