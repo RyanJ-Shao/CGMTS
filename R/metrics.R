@@ -1,6 +1,5 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
-library(dplyr)
 
 cgmmetrics <- function(inputdir, outputdir, magesd = 1, useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10){
   fileNames = list.files(inputdir)
@@ -22,9 +21,7 @@ cgmmetrics <- function(inputdir, outputdir, magesd = 1, useig = FALSE, threshold
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
-    cgmtsall <- cgmtsall %>% mutate(timedate = maxtimestamp)
-
-    #cgmtsall <- cgmtsall %>% mutate(imglucose = imglucose/18)
+    cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
 
     sd <- sdall(cgmtsall = cgmtsall, useig = useig)
     sdvec <- append(sdvec, sd)
@@ -84,7 +81,7 @@ sdgrpbyday <- function(cgmtsall, useig = FALSE){
   coldate <- unique(cgmtsall$timedate)
   sdvec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     if(useig){
       sdvec <- append(sdvec, round(sd(cgmts$imglucose), 2))
     }else{
@@ -105,10 +102,10 @@ sdall <- function(cgmtsall, useig = FALSE){
 }
 
 meangrpbyday <- function(cgmtsall, useig = FALSE){
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   meanvec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     if(useig){
       meanvec <- append(meanvec, round(mean(cgmts$imglucose), 2))
     }else{
@@ -129,10 +126,10 @@ meanall <- function(cgmtsall, useig = FALSE){
 }
 
 cvgrpbyday <- function(cgmtsall, useig = FALSE){
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   cvvec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     if(useig){
       cvvec <- append(cvvec, round(sd(cgmts$imglucose)/mean(cgmts$imglucose), 2))
     }else{
@@ -167,11 +164,11 @@ gmi <- function(cgmtsall, useig = FALSE){
 #Assessment of Risk for Severe Hypoglycemia Among Adults With IDDM
 #Symmetrization of the blood glucose measurement scale and its applications
 lhbgi <- function(cgmtsall, useig = FALSE){
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   lbgivec <- c()
   hbgivec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     if(useig){
       fbg <- 1.794 * (log2(cgmts$imglucose) ** 1.026 - 1.861)
     }else{
@@ -203,10 +200,10 @@ lhbgiall <- function(cgmtsall, useig = FALSE){
 
 #Mean Amplitude of Glycemic Excursions, a Measure of Diabetic Instability
 mage <- function(cgmtsall, useig = FALSE, threshold = 1){
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   magevec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     daysd <- 0
     dayglucose <- c()
     if(useig){
@@ -323,15 +320,15 @@ mageall <- function(cgmtsall, useig = FALSE, threshold = 1){
 
 
 tir <- function(cgmtsall, useig = FALSE, bthreshold = 3.9, athreshold = 10){
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   tirvec <- c()
   for(d in coldate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     fcgmts <- ""
     if(useig){
-      fcgmts <- filter(cgmts, imglucose > bthreshold & imglucose < athreshold)
+      fcgmts <- dplyr::filter(cgmts, imglucose > bthreshold & imglucose < athreshold)
     }else{
-      fcgmts <- filter(cgmts, sglucose > bthreshold & sglucose < athreshold)
+      fcgmts <- dplyr::filter(cgmts, sglucose > bthreshold & sglucose < athreshold)
     }
     tirvec <- append(tirvec, round(nrow(fcgmts)/96,2))
   }
@@ -342,9 +339,9 @@ tirall <- function(cgmtsall, useig = FALSE, bthreshold = 3.9, athreshold = 10){
   tirvec <- 0
   fcgmts <- ""
   if(useig){
-    fcgmts <- filter(cgmtsall, imglucose > bthreshold & imglucose < athreshold)
+    fcgmts <- dplyr::filter(cgmtsall, imglucose > bthreshold & imglucose < athreshold)
   }else{
-    fcgmts <- filter(cgmtsall, sglucose > bthreshold & sglucose < athreshold)
+    fcgmts <- dplyr::filter(cgmtsall, sglucose > bthreshold & sglucose < athreshold)
   }
   tirvec <- round(nrow(fcgmts)/nrow(cgmtsall),2)
   return(tirvec)
@@ -352,13 +349,13 @@ tirall <- function(cgmtsall, useig = FALSE, bthreshold = 3.9, athreshold = 10){
 
 modd <- function(cgmtsall, useig = FALSE){
   moddvec <- c()
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   for(i in seq_along(coldate)){
     if(i == 1){
       next
     }
-    lastday <- filter(cgmtsall,timedate == coldate[i-1])
-    cuday <- filter(cgmtsall,timedate == coldate[i])
+    lastday <- dplyr::filter(cgmtsall,timedate == coldate[i-1])
+    cuday <- dplyr::filter(cgmtsall,timedate == coldate[i])
     if(useig){
       md <- abs(round(mean(cuday$imglucose - lastday$imglucose),2))
     }else{
@@ -371,13 +368,13 @@ modd <- function(cgmtsall, useig = FALSE){
 
 moddall <- function(cgmtsall, useig = FALSE){
   moddvec <- c()
-  coldate <- unique(cgmtsall$timedate)
+  coldate <- dplyr::unique(cgmtsall$timedate)
   for(i in seq_along(coldate)){
     if(i == 1){
       next
     }
-    lastday <- filter(cgmtsall,timedate == coldate[i-1])
-    cuday <- filter(cgmtsall,timedate == coldate[i])
+    lastday <- dplyr::filter(cgmtsall,timedate == coldate[i-1])
+    cuday <- dplyr::filter(cgmtsall,timedate == coldate[i])
     if(useig){
       md <- abs(round(mean(cuday$imglucose - lastday$imglucose),2))
     }else{
