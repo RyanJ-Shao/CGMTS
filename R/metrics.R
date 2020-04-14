@@ -102,7 +102,7 @@ sdall <- function(cgmtsall, useig = FALSE){
 }
 
 meangrpbyday <- function(cgmtsall, useig = FALSE){
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   meanvec <- c()
   for(d in coldate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
@@ -126,7 +126,7 @@ meanall <- function(cgmtsall, useig = FALSE){
 }
 
 cvgrpbyday <- function(cgmtsall, useig = FALSE){
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   cvvec <- c()
   for(d in coldate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
@@ -164,7 +164,7 @@ gmi <- function(cgmtsall, useig = FALSE){
 #Assessment of Risk for Severe Hypoglycemia Among Adults With IDDM
 #Symmetrization of the blood glucose measurement scale and its applications
 lhbgi <- function(cgmtsall, useig = FALSE){
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   lbgivec <- c()
   hbgivec <- c()
   for(d in coldate){
@@ -200,7 +200,7 @@ lhbgiall <- function(cgmtsall, useig = FALSE){
 
 #Mean Amplitude of Glycemic Excursions, a Measure of Diabetic Instability
 mage <- function(cgmtsall, useig = FALSE, threshold = 1){
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   magevec <- c()
   for(d in coldate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
@@ -320,7 +320,7 @@ mageall <- function(cgmtsall, useig = FALSE, threshold = 1){
 
 
 tir <- function(cgmtsall, useig = FALSE, bthreshold = 3.9, athreshold = 10){
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   tirvec <- c()
   for(d in coldate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
@@ -349,7 +349,7 @@ tirall <- function(cgmtsall, useig = FALSE, bthreshold = 3.9, athreshold = 10){
 
 modd <- function(cgmtsall, useig = FALSE){
   moddvec <- c()
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   for(i in seq_along(coldate)){
     if(i == 1){
       next
@@ -368,7 +368,7 @@ modd <- function(cgmtsall, useig = FALSE){
 
 moddall <- function(cgmtsall, useig = FALSE){
   moddvec <- c()
-  coldate <- dplyr::unique(cgmtsall$timedate)
+  coldate <- unique(cgmtsall$timedate)
   for(i in seq_along(coldate)){
     if(i == 1){
       next
