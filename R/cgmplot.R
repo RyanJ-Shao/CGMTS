@@ -244,8 +244,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
         }else{
           y = out[i,]$sglucose
         }
-        fig <- fig %>%
-          plotly::add_trace(
+        fig <- plotly::add_trace(fig,
             type = "scatter",
             x = unlist(strsplit(out[i,]$timestamp, split = " "))[2],
             y = y,
