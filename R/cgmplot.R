@@ -100,7 +100,7 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
 
 cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, html = FALSE){
   freq = 1440/interval
-  uniday = dplyr::unique(cgmtsall$timedate)
+  uniday = unique(cgmtsall$timedate)
   #remove uncompelete day
   for(d in uniday){
     if(useig){
@@ -114,7 +114,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     }
   }
   cgmtsall <- cgmtsall[!is.na(cgmtsall$timedate),]
-  uniday = dplyr::unique(cgmtsall$timedate)
+  uniday = unique(cgmtsall$timedate)
   if(useig){
     gts <- ts(cgmtsall$imglucose, frequency = freq)
   }else{
@@ -216,7 +216,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
 #cgmtrace(cgmts, "ryan", "Desktop/cgm_software/CGMTS/plotoutput")
 cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRUE, html = FALSE){
 
-  cgmdate <- dplyr::unique(cgmtsall$timedate)
+  cgmdate <- unique(cgmtsall$timedate)
   for (d in cgmdate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
     vectimestamp <- as.vector(cgmts$timestamp)
