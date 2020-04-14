@@ -1,8 +1,5 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
-library(dplyr)
-library(plotly)
-
 cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval = 15,
                     diffnum = 1, seadiff = TRUE, html = TRUE){
   fileNames = list.files(inputdir)
@@ -13,7 +10,7 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
-    cgmtsall <- cgmtsall %>% mutate(timedate = maxtimestamp)
+    cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
     #print(head(cgmtsall))
     print("plottinig ACF")
     cgmACF(cgmtsall, fname, outputdir, useig, diffnum, seadiff, interval)
@@ -45,7 +42,6 @@ cgmACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadif
   }else{
     acf(diff(glucosets, differences = diffnum))
   }
-
   dev.off()
 }
 
@@ -67,12 +63,10 @@ cgmPACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadi
   dev.off()
 }
 
-
 cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
   freq = 1440/interval
-
   hm <- merge(0:23, seq(0, 60 - interval, by = interval))
-  x <- data.frame('INTERVAL' = chron(time = paste(hm$x, ':', hm$y, ':', 0)))
+  x <- data.frame('INTERVAL' = chron::chron(time = paste(hm$x, ':', hm$y, ':', 0)))
   x <- data.frame('INTERVAL' = x[order(x$INTERVAL), ])
   x <- as.character(x$INTERVAL)
 
@@ -81,10 +75,10 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
   }else{
     z = matrix(cgmtsall$sglucose,ncol=freq,byrow=T)
   }
-  fig <- plot_ly(x = x, z = z)
-  fig <- fig %>% add_surface()
+  fig <- plotly::plot_ly(x = x, z = z)
+  fig <- fig %>% plotly::add_surface()
   fig <- fig %>%
-    layout(
+    plotly::layout(
       scene = list(
         xaxis = list(
         title = "Time",
@@ -100,14 +94,13 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
       zaxis = list(title = "Glucose Values")
     )
     )
-
   htmlwidgets::saveWidget(fig, paste(outputdir, fname,"_","3d", ".html",sep = ""))
 }
 
 
 cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, html = FALSE){
   freq = 1440/interval
-  uniday = unique(cgmtsall$timedate)
+  uniday = dplyr::unique(cgmtsall$timedate)
   #remove uncompelete day
   for(d in uniday){
     if(useig){
@@ -121,7 +114,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     }
   }
   cgmtsall <- cgmtsall[!is.na(cgmtsall$timedate),]
-  uniday = unique(cgmtsall$timedate)
+  uniday = dplyr::unique(cgmtsall$timedate)
   if(useig){
     gts <- ts(cgmtsall$imglucose, frequency = freq)
   }else{
@@ -132,14 +125,14 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
   trend <- stlgts$time.series[,2]
   remainder <- stlgts$time.series[,3]
   #plot seasonal
-  seafig <- plot_ly(
+  seafig <- plotly::plot_ly(
     type = "scatter",
     x = c(cgmtsall$timestamp),
     y = c(seasonal),
     mode = "lines"
   )
   seafig <- seafig %>%
-    layout(
+    plotly::layout(
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -153,14 +146,14 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
       )
     )
   #plot trend
-  trfig <- plot_ly(
+  trfig <- plotly::plot_ly(
     type = "scatter",
     x = c(cgmtsall$timestamp),
     y = c(trend),
     mode = "lines"
   )
   trfig <- trfig %>%
-    layout(
+    plotly::layout(
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -175,14 +168,14 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     )
 
   #plot trend
-  refig <- plot_ly(
+  refig <- plotly::plot_ly(
     type = "scatter",
     x = c(cgmtsall$timestamp),
     y = c(remainder),
     mode = "lines"
   )
   refig <- refig %>%
-    layout(
+    plotly::layout(
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -203,9 +196,9 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
   }else{
     oldworkdir = getwd()
     setwd(outputdir)
-    orca(seafig, paste(fname,"_","seasonal", ".pdf",sep = ""))
-    orca(trfig, paste( fname,"_","trend", ".pdf",sep = ""))
-    orca(refig, paste(fname,"_","remainder", ".pdf",sep = ""))
+    plotly::orca(seafig, paste(fname,"_","seasonal", ".pdf",sep = ""))
+    plotly::orca(trfig, paste( fname,"_","trend", ".pdf",sep = ""))
+    plotly::orca(refig, paste(fname,"_","remainder", ".pdf",sep = ""))
     setwd(outputdir)
   }
 
@@ -223,9 +216,9 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
 #cgmtrace(cgmts, "ryan", "Desktop/cgm_software/CGMTS/plotoutput")
 cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRUE, html = FALSE){
 
-  cgmdate <- unique(cgmtsall$timedate)
+  cgmdate <- dplyr::unique(cgmtsall$timedate)
   for (d in cgmdate){
-    cgmts <-filter(cgmtsall, timedate == d)
+    cgmts <- dplyr::filter(cgmtsall, timedate == d)
     vectimestamp <- as.vector(cgmts$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     hms <- matrix(vectimestamp,ncol=2,byrow=T)[,2]
@@ -237,7 +230,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
       gts <- cgmts$sglucose
     }
 
-    fig <- plot_ly(
+    fig <- plotly::plot_ly(
       type = "scatter",
       x = c(gy),
       y = c(gts),
@@ -246,7 +239,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
       )
 
     if(markoutliers){
-      out <- filter(cgmts, outliers == "IO" |  outliers == "AO" )
+      out <- dplyr::filter(cgmts, outliers == "IO" |  outliers == "AO" )
       for(i in 1:nrow(out)){
         y=0
         x = ""
@@ -256,7 +249,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
           y = out[i,]$sglucose
         }
         fig <- fig %>%
-          add_trace(
+          plotly::add_trace(
             type = "scatter",
             x = unlist(strsplit(out[i,]$timestamp, split = " "))[2],
             y = y,
@@ -268,7 +261,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
 
 
     fig <- fig %>%
-      layout(
+      plotly::layout(
         xaxis = list(
           title = "Time",
           dtick = 10,
@@ -283,7 +276,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
     }else{
       oldworkdir = getwd()
       setwd(outputdir)
-      orca(fig, paste(fname, "_", d , ".pdf",sep = ""))
+      plotly::orca(fig, paste(fname, "_", d , ".pdf",sep = ""))
       setwd(oldworkdir)
     }
 
