@@ -22,7 +22,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   if(transunits){
     cgmts <- dplyr::mutate(cgmts, sglucose = round(sglucose/18,2))
   }
-
+  coldate <- unique(cgmts$timedate)
   if(compeleteday){
     for (d in coldate){
       if (length(cgmts[cgmts$timedate == d,]$timedate) < freq){
@@ -33,7 +33,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   }else if(imputation){
     if(immethod == "linear"){
       print("linear imputation")
-      cgmts <- dplyr::mutate(cgmts, imglucose = na.interpolation(cgmts$sglucose,maxgap = as.integer(maxgap/interval)))
+      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na.interpolation(cgmts$sglucose,maxgap = as.integer(maxgap/interval)))
     }else if(immethod == "seadec"){
       print("SEADEC imputation")
       tstype <- ts(cgmts$sglucose,frequency = freq)
@@ -41,7 +41,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
       cgmts <- dplyr::mutate(cgmts, imglucose = tstype)
     }else if(immethod == "arima"){
       print("ARIMA imputation")
-      cgmts <- dplyr::mutate(cgmts, imglucose = na.kalman(cgmts$sglucose,model = "auto.arima",maxgap = as.integer(maxgap/interval)))
+      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na.kalman(cgmts$sglucose,model = "auto.arima",maxgap = as.integer(maxgap/interval)))
 
     }
     if(removeday == TRUE){
