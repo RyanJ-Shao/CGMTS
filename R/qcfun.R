@@ -6,7 +6,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
   maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
   cgmts <-  dplyr::mutate(cgmts, timedate = maxtimestamp)
-  coldate <- dplyr::unique(cgmts$timedate)
+  coldate <- unique(cgmts$timedate)
   freq = 1440/interval
   #remove first day and last day
   fday <- coldate[1]
@@ -48,7 +48,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
       is.na.rle <- rle(is.na(cgmts$sglucose))
       is.na.rle$values <- is.na.rle$values & is.na.rle$lengths > as.integer(maxgap/interval)
       reov = cgmts[inverse.rle(is.na.rle), ]
-      reovdate = dplyr::unique(reov$timedate)
+      reovdate = unique(reov$timedate)
       for (d in reovdate){
         cgmts[cgmts$timedate ==d,]$timedate <- NA
       }
@@ -69,7 +69,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   }
   if(outlierdet == TRUE){
     cgmts <- dplyr::mutate(cgmts, outliers = NA)
-    unidate = dplyr::unique(cgmts$timedate)
+    unidate = unique(cgmts$timedate)
     for (d in unidate){
       udcgm <- cgmts[cgmts$timedate ==d,]
       if(!any(is.na(udcgm$sglucose))){
