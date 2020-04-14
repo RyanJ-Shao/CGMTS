@@ -76,9 +76,8 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
     z = matrix(cgmtsall$sglucose,ncol=freq,byrow=T)
   }
   fig <- plotly::plot_ly(x = x, z = z)
-  fig <- fig %>% plotly::add_surface()
-  fig <- fig %>%
-    plotly::layout(
+  fig <- plotly::add_surface(fig)
+  fig <- plotly::layout(fig,
       scene = list(
         xaxis = list(
         title = "Time",
@@ -131,8 +130,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     y = c(seasonal),
     mode = "lines"
   )
-  seafig <- seafig %>%
-    plotly::layout(
+  seafig <- plotly::layout(seafig,
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -152,8 +150,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     y = c(trend),
     mode = "lines"
   )
-  trfig <- trfig %>%
-    plotly::layout(
+  trfig <- plotly::layout(trfig,
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -174,8 +171,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     y = c(remainder),
     mode = "lines"
   )
-  refig <- refig %>%
-    plotly::layout(
+  refig <- plotly::layout(refig,
       xaxis = list(
         title = "Time",
         dtick = 10,
@@ -260,8 +256,7 @@ cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRU
     }
 
 
-    fig <- fig %>%
-      plotly::layout(
+    fig <- plotly::layout(fig,
         xaxis = list(
           title = "Time",
           dtick = 10,
