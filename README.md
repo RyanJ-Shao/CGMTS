@@ -27,3 +27,24 @@ CGMTS package needs orca to export pdf file of CGM plot. Orca is an Electron app
 - From the Shortcut tab, copy the directory in the Start in field.
 - Add this Start in directory to your system PATH (see below).
 - Open a new Command Prompt and verify that the orca executable is available on your PATH.
+## 3.	License
+This project is licensed under The MIT License.
+## 4. Install CGMTS Package in R
+The package can be installed from GitHub directly:
+```
+library(“devtools”)
+install_github(“RyanJ-Shao/CGMTS”)
+```
+## 5. Data Format
+CGMTS package accept CSV file as input. The input file includes three columns: "timestamp","sglucose","bglucose", every column are separated by comma. For example:
+timestamp |	sglucose | bglucose
+-------|--------|--------
+2019-12-06 19:50 |	10.9	| NA
+2019-12-06 20:05 |	11.9	NA
+2019-12-06 20:20	12.5	NA
+2019-12-06 20:35	13.1	NA
+2019-12-06 20:50	14	NA
+2019-12-06 21:05	14.8	NA
+
+The “sglucose” column is glucose from CGM sensor, “bglucose” is glucose from calibration glucose or SMBG. If sglucose is missing, the timestamp of this point still needs to be recorded.
+
