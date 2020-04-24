@@ -58,3 +58,13 @@ There are three main functions in CGMTS: prepro, cgmmetrics and cgmplot. The pre
 - The cgmmetrics () function takes a directory which contains preprocessed CGM files as input, and export the metrics to an output directory. The cgmmetrics() function can calculate the blood glucose metrics that is common and recommended by the consensus, including standard deviation (SD), mean glucose, coefficient of variation (CV), glucose management index(GMI), low blood glucose index (LBGI), high blood glucose index (HBGI), mean amplitude of glycemic excursions (MAGE), time in range (TIR) and mean of daily differences (MODD). The cgmmetrics() can calculate everyday blood glucose metrics and the overall blood glucose metrics. If the “useig” parameters is set to TRUE, this function will use imputed data.
 #### (3)	Visualize CGM data
 - The cgmplot () function takes a directory which contains preprocessed CGM files as input, and export the plots to an output directory. The cgmplot() function can calculate types of plot, including CGM trace plot, CGM 3 dimensional plot, CGM decomposition plot and ACF, PACF plot. The cgmplot() function will generate HTML file as default except the ACF and PACF plot. If “html” parameters is set to FALSE, it will generate PDF file instead. If the “useig” parameters is set to TRUE, this function will use imputed data.
+## 7.	Example
+The CGMTS package contains an example CGM file, we can load it and test the functions of CGMTS package on it. First, use prepro() function to detect outliers and impute missing in CGM data.
+- library(CGMTS)
+- datadir <- system.file("extdata", package = "CGMTS")
+- prepro(inputdir=datadir, outputdir, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE)
+After preprocessing CGM data, we can use cgmmetrics() function to calculate the metrics of blood glucose. 
+- cgmmetrics(inputdir, outputdir ,magesd = 1, useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10)
+The cgmplot() function can generate series of blood glucose fluctuation plot.
+- Cgmplot(datadir, outputdir, useig= FALSE, markoutliers= TRUE, interval = 15, diffnum = 1, seadiff = TRUE, html = TRUE)
+
