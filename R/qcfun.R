@@ -1,7 +1,7 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
 qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear",
-                 maxgap = 60, compeleteday = TRUE, removeday = FALSE, transunits = FALSE){
+                 maxgap = 60, compeleteday = TRUE, removeday = FALSE, transunits = FALSE, removeflday = TRUE){
   vectimestamp <- as.vector(cgmts$timestamp)
   vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
   maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
@@ -10,23 +10,30 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   freq = 1440/interval
   #remove first day and last day
   fday <- coldate[1]
-  lday <- coldate[-1]
-  #some data points missed, the time still be recored
-  if(length(cgmts[cgmts$timedate ==fday,]$timedate) <freq){
-    cgmts[cgmts$timedate ==fday,]$timedate <- NA
+  lday <- coldate[length(coldate)]
+  if(removeflday){
+    #some data points missed, the time still be recored
+    if(length(cgmts[cgmts$timedate ==fday,]$timedate) <freq){
+      cgmts[cgmts$timedate ==fday,]$timedate <- NA
+    }
+
+    cgmts <- cgmts[!is.na(cgmts$timedate),]
+    if(length(cgmts[cgmts$timedate ==lday,]$timedate) <freq){
+      cgmts[cgmts$timedate ==lday,]$timedate <- NA
+    }
+    cgmts <- cgmts[!is.na(cgmts$timedate),]
   }
-  if(length(cgmts[cgmts$timedate ==lday,]$timedate) <freq){
-    cgmts[cgmts$timedate ==lday,]$timedate <- NA
-  }
-  cgmts <- cgmts[!is.na(cgmts$timedate),]
+
   if(transunits){
     cgmts <- dplyr::mutate(cgmts, sglucose = round(sglucose/18,2))
   }
+
   coldate <- unique(cgmts$timedate)
   if(compeleteday){
     for (d in coldate){
       if (length(cgmts[cgmts$timedate == d,]$timedate) < freq){
         cgmts[cgmts$timedate ==d,]$timedate <- NA
+        cgmts <- cgmts[!is.na(cgmts$timedate),]
       }
     }
     cgmts <- cgmts[!is.na(cgmts$timedate),]
@@ -51,8 +58,9 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
       reovdate = unique(reov$timedate)
       for (d in reovdate){
         cgmts[cgmts$timedate ==d,]$timedate <- NA
+        cgmts <- cgmts[!is.na(cgmts$timedate),]
       }
-      cgmts <- cgmts[!is.na(cgmts$timedate),]
+
     }
   }else{
     if(removeday == TRUE){
