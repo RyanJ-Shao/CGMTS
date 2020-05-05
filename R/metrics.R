@@ -154,11 +154,11 @@ cvall <- function(cgmtsall, useig = FALSE){
 gmi <- function(cgmtsall, useig = FALSE){
   mgmi = 0
   if(useig){
-    mgmi <- 12.71 + 4.70587 * mean(cgmtsall$imglucose)
+    mgmi <- 3.31 + 0.02392 * mean(cgmtsall$imglucose*18)
   }else{
-    mgmi <- 12.71 + 4.70587 * mean(cgmtsall$sglucose)
+    mgmi <- 3.31 + 0.02392 * mean(cgmtsall$sglucose*18)
   }
-  return(mgmi)
+  return(round(mgmi,2))
 }
 
 #Assessment of Risk for Severe Hypoglycemia Among Adults With IDDM
@@ -170,9 +170,9 @@ lhbgi <- function(cgmtsall, useig = FALSE){
   for(d in coldate){
     cgmts <- dplyr::filter(cgmtsall, timedate == d)
     if(useig){
-      fbg <- 1.794 * (log2(cgmts$imglucose) ** 1.026 - 1.861)
+      fbg <- 1.794 * (log(cgmts$imglucose) ** 1.026 - 1.861)
     }else{
-      fbg <- 1.794 * (log2(cgmts$sglucose) ** 1.026 - 1.861)
+      fbg <- 1.794 * (log(cgmts$sglucose) ** 1.026 - 1.861)
     }
     rlbg <- fbg[fbg < 0]
     rhbg <- fbg[fbg > 0]
@@ -186,9 +186,9 @@ lhbgi <- function(cgmtsall, useig = FALSE){
 
 lhbgiall <- function(cgmtsall, useig = FALSE){
   if(useig){
-    fbg <- 1.794 * (log2(cgmtsall$imglucose) ** 1.026 - 1.861)
+    fbg <- 1.794 * (log(cgmtsall$imglucose) ** 1.026 - 1.861)
   }else{
-    fbg <- 1.794 * (log2(cgmtsall$sglucose) ** 1.026 - 1.861)
+    fbg <- 1.794 * (log(cgmtsall$sglucose) ** 1.026 - 1.861)
   }
   rlbg <- fbg[fbg < 0]
   rhbg <- fbg[fbg > 0]
@@ -365,26 +365,6 @@ modd <- function(cgmtsall, useig = FALSE){
   }
   return(moddvec)
 }
-
-moddall <- function(cgmtsall, useig = FALSE){
-  moddvec <- c()
-  coldate <- unique(cgmtsall$timedate)
-  for(i in seq_along(coldate)){
-    if(i == 1){
-      next
-    }
-    lastday <- dplyr::filter(cgmtsall,timedate == coldate[i-1])
-    cuday <- dplyr::filter(cgmtsall,timedate == coldate[i])
-    if(useig){
-      md <- abs(round(mean(cuday$imglucose - lastday$imglucose),2))
-    }else{
-      md <- abs(round(mean(cuday$sglucose - lastday$sglucose),2))
-    }
-    moddvec <- append(moddvec, md)
-  }
-  return(moddvec)
-}
-
 
 
 
