@@ -2,6 +2,7 @@
 ## 1.	Packages which CGMTS depends on.
 ```
 dplyr
+lubridate
 plotly
 imputeTS
 forecast
