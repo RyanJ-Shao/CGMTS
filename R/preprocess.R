@@ -5,7 +5,7 @@
 #device = 0: manual format
 #device = 1: libre freestyle
 #device = 2: ipro2
-#device = 2: g6
+#device = 3: g6
 prepro <- function(inputdir="", outputdir="", outlierdet = TRUE, interval = 15, imputation = FALSE,
                    immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 0, transunits = FALSE, removeflday = TRUE){
 	fileNames = list.files(inputdir)
