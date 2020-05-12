@@ -46,7 +46,7 @@ timestamp |	sglucose | bglucose
 2019-12-06 20:50 |	14 |	NA
 2019-12-06 21:05 |	14.8 |	NA
 
-The “sglucose” column is glucose from CGM sensor, “bglucose” is glucose from calibration glucose or SMBG. If sglucose is missing, the timestamp of this point still needs to be recorded.
+The “sglucose” column is glucose from CGM sensor, “bglucose” is glucose from calibration glucose or SMBG. If sglucose is missing, the timestamp of this point still needs to be recorded. It also can directly read original data from Abbott FreeStyle Libre, Dexcom G6 and Medtronic Ipro2.
 
 ## 6. Running CGMTS
 There are three main functions in CGMTS: prepro, cgmmetrics and cgmplot. The prepro() function preprocess CGM data, its main function including: read all CSV files from the input directory, detect outliers from CGM data and impute the missing data. The cgmmetrics() function calculate common CGM metrics, such as standard deviation (SD), coefficient of variation (CV), mean glucose, etc. The cgmplot() function generates many different plots of CGM data, such as glucose trace, autocorrelation function plot, partial autocorrelation function plot, etc.
