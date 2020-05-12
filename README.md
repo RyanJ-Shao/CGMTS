@@ -64,11 +64,11 @@ The CGMTS package contains an example CGM file, we can load it and test the func
 ```
 library(CGMTS)
 datadir <- system.file("extdata", package = "CGMTS")
-prepro(inputdir=datadir, outputdir, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE)
+prepro(inputdir=datadir, outputdir, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 0, transunits = FALSE, removeflday = TRUE)
 ```
 After preprocessing CGM data, we can use cgmmetrics() function to calculate the metrics of blood glucose. 
 ```
-cgmmetrics(inputdir, outputdir ,magesd = 1, useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10)
+cgmmetrics(inputdir, outputdir ,useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10)
 ```
 The cgmplot() function can generate series of blood glucose fluctuation plot.
 ```
