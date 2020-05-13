@@ -64,7 +64,7 @@ The CGMTS package contains an example CGM file, we can load it and test the func
 ```
 library(CGMTS)
 datadir <- system.file("extdata", package = "CGMTS")
-prepro(inputdir=paste(datadir, "/DexcomG6/", sep = ""), outputdir, outlierdet = TRUE, interval = 5, imputation = FALSE, immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 3, transunits = FALSE, removeflday = TRUE)
+prepro(inputdir=paste(datadir, "/DexcomG6/", sep = ""), outputdir, outlierdet = TRUE, interval = 5, imputation = FALSE, immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 3, transunits = TRUE, removeflday = TRUE)
 ```
 After preprocessing CGM data, we can use cgmmetrics() function to calculate the metrics of blood glucose. 
 ```
