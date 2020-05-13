@@ -36,18 +36,16 @@ fformat <- function(fpath, device = 0){
     cgmts <- read.table(fpath, sep = "\t", skip = 11,header = TRUE)
     cgmts <- dplyr::select(cgmts, 4,10)
     names(cgmts) <- c("timestamp", "sglucose")
-    x <- as.POSIXct(dmy_hms(cgmts$timestamp))
-    xx = paste(year(x), "-", month(x), "-", day(x), " ", hour(x), ":", minute(x), sep = "")
-    cgmts$timestamp <- xx
+    x <- as.character(lubridate::dmy_hms(cgmts$timestamp))
+    cgmts$timestamp <- x
     cgmts <-  dplyr::mutate(cgmts, bglucose = NA)
   }else if(device == 3){
     cgmts <- read.table(fpath, sep = ",", skip = 11)
-    cgmts <- select(cgmts, 2, 8)
+    cgmts <- dplyr::select(cgmts, 2, 8)
     names(cgmts) <- c("timestamp", "sglucose")
     cgmts <-  dplyr::mutate(cgmts, timestamp = gsub("T"," ", cgmts$timestamp))
-    x <- as.POSIXct(ymd_hms(cgmts$timestamp))
-    xx = paste(year(x), "-", month(x), "-", day(x), " ", hour(x), ":", minute(x), sep = "")
-    cgmts$timestamp <- xx
+    x <- as.character(lubridate::ymd_hms(cgmts$timestamp))
+    cgmts$timestamp <- x
     cgmts <-  dplyr::mutate(cgmts, bglucose = NA)
   }
   return(cgmts)
