@@ -27,7 +27,7 @@ fformat <- function(fpath, device = 0){
     cgmts <- read.csv(fpath)
     return(cgmts)
   }else if(device == 1){
-    cgmts <- read.table(fpath, sep = "\t", skip = 2,header = TRUE)
+    cgmts <- read.table(fpath, sep = "\t", skip = 3, encoding = "UTF-8")
     cgmts <- dplyr::select(cgmts, 2,4)
     names(cgmts) <- c("timestamp", "sglucose")
     cgmts <-  dplyr::mutate(cgmts, timestamp = gsub("/","-", cgmts$timestamp))
