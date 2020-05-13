@@ -2,21 +2,20 @@
 # Copyright (c) 2020 UCAS
 qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear",
                  maxgap = 60, compeleteday = TRUE, removeday = FALSE, transunits = FALSE, removeflday = TRUE){
+  cgmts <- cgmts[order(lubridate::ymd_hms(cgmts$timestamp)),]
   vectimestamp <- as.vector(cgmts$timestamp)
   vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
   maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
   cgmts <-  dplyr::mutate(cgmts, timedate = maxtimestamp)
   coldate <- unique(cgmts$timedate)
   freq = 1440/interval
-  #remove first day and last day
+  
   fday <- coldate[1]
   lday <- coldate[length(coldate)]
   if(removeflday){
-    #some data points missed, the time still be recored
     if(length(cgmts[cgmts$timedate ==fday,]$timedate) <freq){
       cgmts[cgmts$timedate ==fday,]$timedate <- NA
     }
-
     cgmts <- cgmts[!is.na(cgmts$timedate),]
     if(length(cgmts[cgmts$timedate ==lday,]$timedate) <freq){
       cgmts[cgmts$timedate ==lday,]$timedate <- NA
@@ -52,7 +51,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
 
     }
     if(removeday == TRUE){
-      is.na.rle <- rle(is.na(cgmts$sglucose))
+      is.na.rle <- rle(is.na(cgmts$imglucose))
       is.na.rle$values <- is.na.rle$values & is.na.rle$lengths > as.integer(maxgap/interval)
       reov = cgmts[inverse.rle(is.na.rle), ]
       reovdate = unique(reov$timedate)
@@ -95,7 +94,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
         #remove ao or io index according to theri lambda
         for(ic in indinc){
           if(aodict[[as.character(ic)]] < iodict[[as.character(ic)]]){
-            removeind = which(c(ic) %in% names(aodict) )
+            removeind = which(c(ic) %in% names(aodict))
             aodict <- aodict[-removeind]
           }else{
             removeind <- which(c(ic) %in% names(iodict) )
