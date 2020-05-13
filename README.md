@@ -68,7 +68,7 @@ prepro(inputdir=paste(datadir, "/DexcomG6/", sep = ""), outputdir, outlierdet = 
 ```
 After preprocessing CGM data, we can use cgmmetrics() function to calculate the metrics of blood glucose. 
 ```
-cgmmetrics(inputdir, outputdir ,useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10, interval = 5)
+cgmmetrics(inputdir, outputdir ,useig = TRUE, threshold =1, bthreshold = 3.9, athreshold = 10, interval = 5)
 ```
 The cgmplot() function can generate series of blood glucose fluctuation plot.
 ```
