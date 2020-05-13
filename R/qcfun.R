@@ -9,7 +9,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   cgmts <-  dplyr::mutate(cgmts, timedate = maxtimestamp)
   coldate <- unique(cgmts$timedate)
   freq = 1440/interval
-  
+  #remove first day and last day
   fday <- coldate[1]
   lday <- coldate[length(coldate)]
   if(removeflday){
