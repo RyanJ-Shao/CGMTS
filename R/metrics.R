@@ -19,7 +19,7 @@ cgmmetrics <- function(inputdir, outputdir, useig = FALSE, threshold =1, bthresh
     fnamevec <- append(fnamevec, fname)
     print(paste("processing file:", f))
     cgmtsall <- read.csv(paste(inputdir, "/", f, sep = ''),stringsAsFactors= FALSE)
-    cgmts <- cgmts[order(ymd_hm(cgmts$timestamp)),]
+    cgmtsall <- cgmtsall[order(ymd_hm(cgmtsall$timestamp)),]
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
