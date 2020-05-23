@@ -35,10 +35,10 @@ cgmACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadif
   }else{
     glucosets = cgmtsall$sglucose
   }
-  glucosets = ts(glucosets, frequency = 1440/15)
+  glucosets = ts(glucosets, frequency = 1440/interval)
   pdf(paste(outputdir, fname,"_","acf", ".pdf",sep = ""))
   if(seadiff){
-    acf(diff(glucosets, differences = diffnum), lag = 1440/15)
+    acf(diff(glucosets, differences = diffnum), lag = 1440/interval)
   }else{
     acf(diff(glucosets, differences = diffnum))
   }
