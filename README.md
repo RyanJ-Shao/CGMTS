@@ -72,5 +72,5 @@ cgmmetrics(inputdir, outputdir ,useig = TRUE, threshold =1, bthreshold = 3.9, at
 ```
 The cgmplot() function can generate series of blood glucose fluctuation plot.
 ```
-cgmplot(datadir, outputdir, useig= TRUE, markoutliers= TRUE, interval = 15, diffnum = 1, seadiff = TRUE, html = TRUE)
+cgmplot(datadir, outputdir, useig= TRUE, markoutliers= TRUE, interval = 15, diffnum = 1, html = TRUE)
 ```
