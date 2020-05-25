@@ -1,7 +1,9 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
+
+
 cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval = 15,
-                    diffnum = 1, seadiff = TRUE, html = TRUE){
+                    diffnum = 1, html = TRUE){
   fileNames = list.files(inputdir)
   for(f in fileNames){
     fname = unlist(strsplit(f, split = "\\."))[1]
@@ -13,9 +15,9 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
     #print(head(cgmtsall))
     print("plottinig ACF")
-    cgmACF(cgmtsall, fname, outputdir, useig, diffnum, seadiff, interval)
+    cgmACF(cgmtsall, fname, outputdir, useig, diffnum, interval)
     print("plottinig PACF")
-    cgmPACF(cgmtsall, fname, outputdir, useig, diffnum, seadiff, interval)
+    cgmPACF(cgmtsall, fname, outputdir, useig, diffnum, interval)
     print("plottinig 3d")
     cgm3d(cgmtsall, fname, outputdir, useig, interval)
     print("plottinig decom")
@@ -24,29 +26,26 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     cgmtrace(cgmtsall, fname, outputdir,useig, markoutliers, html = html)
   }
 
-
 }
 
-
-cgmACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadiff = TRUE, interval = 15){
+cgmACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, interval = 15){
   glucosets = NULL
   if(useig){
-    glucosets = cgmtsall$imglucose
+    glucosets <- cgmtsall$imglucose
   }else{
-    glucosets = cgmtsall$sglucose
+    glucosets <- cgmtsall$sglucose
   }
-  glucosets = ts(glucosets, frequency = 1440/interval)
+  glucosets <- ts(glucosets, frequency = 1440/interval)
   pdf(paste(outputdir, fname,"_","acf", ".pdf",sep = ""))
-  if(seadiff){
-    acf(diff(glucosets, differences = diffnum), lag = 1440/interval)
-  }else{
-    acf(diff(glucosets, differences = diffnum))
-  }
+  adftest <- tseries::adf.test(diff(glucosets, differences = diffnum))
+  pv <- adftest$p.value
+  title = paste("ACF, ADF p_value:", as.character(pv), sep = "")
+  acf(diff(glucosets, differences = diffnum), main = title)
   dev.off()
 }
 
 
-cgmPACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadiff = TRUE, interval = 15){
+cgmPACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, interval = 15){
   glucosets = NULL
   if(useig){
     glucosets = cgmtsall$imglucose
@@ -55,11 +54,10 @@ cgmPACF <- function(cgmtsall, fname, outputdir, useig = TRUE, diffnum = 1, seadi
   }
   glucosets = ts(glucosets, frequency = 1440/interval)
   pdf(paste(outputdir, fname,"_","pacf", ".pdf",sep = ""))
-  if(seadiff){
-    pacf(diff(glucosets, differences = diffnum), lag = 1440/interval)
-  }else{
-    pacf(diff(glucosets, differences = diffnum))
-  }
+  adftest <- tseries::adf.test(diff(glucosets, differences = diffnum))
+  pv <- adftest$p.value
+  title = paste("PACF, ADF p_value:", as.character(pv), sep = "")
+  pacf(diff(glucosets, differences = diffnum), main= title)
   dev.off()
 }
 
