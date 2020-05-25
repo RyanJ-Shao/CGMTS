@@ -1,5 +1,5 @@
-# CGM Time Series (CGMTS) User Guide
-## 1.	Packages which CGMTS depends on.
+# Continuous Glucose Monitoring Time Series Data Analysis (CGMTSA) User Guide
+## 1.	Packages which CGMTSA depends on.
 ```
 dplyr
 lubridate
@@ -10,7 +10,7 @@ TSA
 ```
 
 ## 2.	Install “orca”
-CGMTS package needs orca to export pdf file of CGM plot. Orca is an Electron app that generates images and reports of Plotly things like plotly.js graphs, dash apps, dashboards from the command line. The installation guide of orca can be seen in https://github.com/plotly/orca.
+CGMTSA package needs orca to export pdf file of CGM plot. Orca is an Electron app that generates images and reports of Plotly things like plotly.js graphs, dash apps, dashboards from the command line. The installation guide of orca can be seen in https://github.com/plotly/orca.
 #### Installation guide of orca in MacOS:
 - Unzip the mac-release.zip file.
 - Double-click on the orca-X.Y.Z.dmg file. This will open an installation window.
@@ -37,7 +37,7 @@ library(“devtools”)
 install_github(“RyanJ-Shao/CGMTS”)
 ```
 ## 5. Data Format
-CGMTS package accept CSV file as input. The input file includes three columns: "timestamp","sglucose","bglucose", every column are separated by comma. For example:
+CGMTSA package accept CSV file as input. The input file includes three columns: "timestamp","sglucose","bglucose", every column are separated by comma. For example:
 timestamp |	sglucose | bglucose
 -------|--------|--------
 2019-12-06 19:50 |	10.9	| NA
@@ -50,7 +50,7 @@ timestamp |	sglucose | bglucose
 The “sglucose” column is glucose from CGM sensor, “bglucose” is glucose from calibration glucose or SMBG. If sglucose is missing, the timestamp of this point still needs to be recorded. It also can directly read original data from Abbott FreeStyle Libre, Dexcom G6 and Medtronic Ipro2.
 
 ## 6. Running CGMTS
-There are three main functions in CGMTS: prepro, cgmmetrics and cgmplot. The prepro() function preprocess CGM data, its main function including: read all CSV files from the input directory, detect outliers from CGM data and impute the missing data. The cgmmetrics() function calculate common CGM metrics, such as standard deviation (SD), coefficient of variation (CV), mean glucose, etc. The cgmplot() function generates many different plots of CGM data, such as glucose trace, autocorrelation function plot, partial autocorrelation function plot, etc.
+There are three main functions in CGMTSA: prepro, cgmmetrics and cgmplot. The prepro() function preprocess CGM data, its main function including: read all CSV files from the input directory, detect outliers from CGM data and impute the missing data. The cgmmetrics() function calculate common CGM metrics, such as standard deviation (SD), coefficient of variation (CV), mean glucose, etc. The cgmplot() function generates many different plots of CGM data, such as glucose trace, autocorrelation function plot, partial autocorrelation function plot, etc.
 #### (1) Preprocess CGM data
 - The prepro() function takes a directory which contains CGM files as input, and export them to an output directory. The prepro() function can directly read original data from Abbott FreeStyle Libre, Dexcom G6 and Medtronic Ipro2 or manually format. If parameters “device” is set to 0, it indicates the file is manually format, 1 indicates the file is FreeStyle Libre format, 2 indicates the file is Dexcom G6, 3 indicates the file is Ipro2 format. In this function we will remove the first and end day of CGM data, because the data quality of these two days is bad in general. The prepro() function includes two main functions: outliers detection and imputation.
 - The prepro() function can detect the innovational outlier (IO) and additive outlier (AO). These two types of outliers represent a large portion of outliers likely to be found in practice. The outliers may cause serious bias in estimating autocorrelations, partial autocorrelations and autoregressive moving average parameters. The AO only affect the time when it happened, the IO represents an extraordinary shock in time T influencing the sequence after time T. We use Chang’s method () to detect AO and IO, and mark them in CGM trace plot.
@@ -60,7 +60,7 @@ There are three main functions in CGMTS: prepro, cgmmetrics and cgmplot. The pre
 #### (3)	Visualize CGM data
 - The cgmplot () function takes a directory which contains preprocessed CGM files as input, and export the plots to an output directory. The cgmplot() function can calculate types of plot, including CGM trace plot, CGM 3 dimensional plot, CGM decomposition plot and ACF, PACF plot. The cgmplot() function will generate HTML file as default except the ACF and PACF plot. If “html” parameters is set to FALSE, it will generate PDF file instead. If the “useig” parameters is set to TRUE, this function will use imputed data.
 ## 7.	Examples
-The CGMTS package contains an example CGM file, we can load it and test the functions of CGMTS package on it. First, use prepro() function to detect outliers and impute missing in CGM data.
+The CGMTSA package contains an example CGM file, we can load it and test the functions of CGMTSA package on it. First, use prepro() function to detect outliers and impute missing in CGM data.
 1. Manual format
 ```
 library(CGMTS)
