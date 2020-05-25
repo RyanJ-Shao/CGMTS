@@ -1,7 +1,7 @@
 # The MIT License (MIT)
 # Copyright (c) 2020 UCAS
 
-cgmmetrics <- function(inputdir, outputdir, useig = FALSE, threshold =1, bthreshold = 3.9, athreshold = 10, interval = 15){
+cgmmetrics <- function(inputdir, outputdir, useig = FALSE, diffnum = 1, threshold =1, bthreshold = 3.9, athreshold = 10, interval = 15){
   fileNames = list.files(inputdir)
   freq = 1440/interval
   fnamevec <- c()
@@ -19,6 +19,7 @@ cgmmetrics <- function(inputdir, outputdir, useig = FALSE, threshold =1, bthresh
     fnamevec <- append(fnamevec, fname)
     print(paste("processing file:", f))
     cgmtsall <- read.csv(paste(inputdir, "/", f, sep = ''),stringsAsFactors= FALSE)
+    cgmtsall <- cgmtsall[order(lubridate::ymd_hm(cgmtsall$timestamp)),]
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
     maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
@@ -43,17 +44,17 @@ cgmmetrics <- function(inputdir, outputdir, useig = FALSE, threshold =1, bthresh
     tirvec <- append(tirvec, tir)
     modd <- round(mean(modd(cgmtsall = cgmtsall, useig = useig)),2)
     moddvec <- append(moddvec, modd)
-
+    gacf <- acfcoff(cgmtsall, useig = useig, diffnum = diffnum, interval = interval)
+    gpacf <- pacfcoff(cgmtsall, useig = useig, diffnum = diffnum, interval = interval)
     mtcdf <- mtcgrpday(cgmtsall,useig = useig, threshold = threshold,  bthreshold = bthreshold, athreshold = athreshold, freq = freq)
     write.csv(mtcdf, paste(outputdir,fname, "_metricsByDay.csv",sep = ""),row.names = FALSE)
-
-    summetrics <- data.frame(ID = fnamevec, SD = sdvec, Mean = meanvec, CV = cvvec, GMI = gmisvec,
-                             LBGI = lbgivec, HBGI = hbgivec, MAGE = magevec, TIR = tirvec,
-                             MODD = moddvec)
-    write.csv(summetrics, paste(outputdir,fname,"_metricsSummary.csv",sep = ""),row.names = FALSE)
-
-
-    }
+  }
+  summetrics <- data.frame(ID = fnamevec, SD = sdvec, Mean = meanvec, CV = cvvec, GMI = gmisvec,
+                           LBGI = lbgivec, HBGI = hbgivec, MAGE = magevec, TIR = tirvec,
+                           MODD = moddvec,acf_1 = gacf[1], acf_2 = gacf[2], acf_3 = gacf[3],
+                           acf_4 = gacf[4], acf_5 = gacf[5], pacf_1 = gpacf[1], pacf_2 = gpacf[2],
+                           pacf_3 = gpacf[3], pacf_4 = gpacf[4], pacf_5 = gpacf[5])
+  write.csv(summetrics, paste(outputdir,fname,"metricsSummary.csv",sep = ""),row.names = FALSE)
 
 }
 
@@ -368,6 +369,29 @@ modd <- function(cgmtsall, useig = FALSE){
 }
 
 
+acfcoff <- function(cgmtsall, useig = TRUE, diffnum = 1, interval = 15){
+  glucosets = NULL
+  if(useig){
+    glucosets <- cgmtsall$imglucose
+  }else{
+    glucosets <- cgmtsall$sglucose
+  }
+  glucosets <- ts(glucosets, frequency = 1440/interval)
+  gacf <- acf(diff(glucosets, differences = diffnum), plot = FALSE)
+  return(gacf$acf[2:6])
+}
+
+pacfcoff <- function(cgmtsall, useig = TRUE, diffnum = 1, interval = 15){
+  glucosets = NULL
+  if(useig){
+    glucosets <- cgmtsall$imglucose
+  }else{
+    glucosets <- cgmtsall$sglucose
+  }
+  glucosets <- ts(glucosets, frequency = 1440/interval)
+  gpacf <- pacf(diff(glucosets, differences = diffnum), plot = FALSE)
+  return(gpacf$acf[2:6])
+}
 
 
 
